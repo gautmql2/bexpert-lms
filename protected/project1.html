@@ -7,30 +7,54 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module" src="/firebase-auth.js"></script>
 </head>
-<body class="bg-white min-h-screen flex flex-col items-center justify-start py-10">
+<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-start py-10 px-4">
 
-  <h1 class="text-3xl font-bold mb-2">📘 Welcome to Course 1</h1>
-  <p class="text-gray-600 mb-6">This is a sample course page for LMS users.</p>
+  <h1 class="text-3xl font-bold mb-4 text-center">🎓 Project 1 - Excel Automation</h1>
+  <p class="text-gray-600 text-center mb-6">Watch the video and download the supporting files below.</p>
 
   <!-- YouTube Video Embed -->
   <div class="w-full max-w-2xl mb-6">
     <div class="aspect-w-16 aspect-h-9">
-      <iframe class="w-full h-96 rounded" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" title="Advance Excel" frameborder="0" allowfullscreen></iframe>
+      <iframe class="w-full h-96 rounded" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" title="Excel Project" frameborder="0" allowfullscreen></iframe>
     </div>
+  </div>
+
+  <!-- Supporting Files -->
+  <div class="mb-8 text-center">
+    <a href="https://drive.google.com/your-supporting-file-link" target="_blank" class="text-blue-600 underline">📄 Download Project Files</a>
   </div>
 
   <!-- Action Buttons -->
   <div class="flex gap-4">
-    <button onclick="goHome()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">🏠 Go to Dashboard</button>
+    <button onclick="goDashboard()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">🏠 Go to Dashboard</button>
     <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Logout</button>
   </div>
 
-  <!-- Firebase Auth Protection & Logic -->
+  <!-- Auth Check Script -->
   <script type="module">
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { auth } from "/firebase-auth.js";
 
-    // Protect page
     onAuthStateChanged(auth, (user) => {
+      const hasSubscribed = localStorage.getItem("hasSubscribedToBexpert");
       if (!user) {
-        alert("You must be
+        window.location.href = "/login.html";
+      } else if (!hasSubscribed) {
+        window.location.href = "/subscribe.html";
+      }
+    });
+
+    window.goDashboard = function () {
+      window.location.href = "/protected/dashboard.html";
+    }
+
+    window.logout = function () {
+      signOut(auth).then(() => {
+        localStorage.removeItem("hasSubscribedToBexpert");
+        sessionStorage.clear();
+        window.location.href = "/login.html";
+      });
+    }
+  </script>
+</body>
+</html>
