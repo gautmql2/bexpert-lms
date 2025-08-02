@@ -1,3 +1,14 @@
+<script>
+  const user = sessionStorage.getItem("user");
+  const hasSubscribed = localStorage.getItem("hasSubscribedToBexpert");
+
+  if (!user) {
+    window.location.href = "/login.html";
+  } else if (!hasSubscribed) {
+    window.location.href = "/subscribe.html";
+  }
+</script>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
