@@ -12,7 +12,8 @@
     <p class="text-gray-600 mb-6">
       To access the full LMS content, please subscribe to our YouTube channel:
     </p>
-    <!-- Embed your channel or a promo video -->
+
+    <!-- Embed your promo video -->
     <div class="aspect-video mb-4">
       <iframe class="w-full h-full rounded-lg"
               src="https://www.youtube.com/embed/gTLiv-1ewBU"
@@ -21,10 +22,12 @@
               allowfullscreen>
       </iframe>
     </div>
+
     <a href="https://www.youtube.com/@BexpertAI" target="_blank"
        class="inline-block mb-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">
       📺 Subscribe on YouTube
     </a>
+
     <button id="confirm-subscribe"
             class="block w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
       ✅ I've Subscribed – Take Me to Dashboard
@@ -44,120 +47,85 @@
     <!-- Test Different Paths -->
     <div class="mt-4 space-y-2">
       <h4 class="font-semibold">Test Dashboard Paths:</h4>
-      <button onclick="testPath('./dashboard.html')" class="bg-green-500 text-white px-3 py-1 rounded text-sm">
-        Test: ./dashboard.html
+      <button onclick="testPath('/protected/dashboard.html')" class="bg-green-500 text-white px-3 py-1 rounded text-sm">
+        Test: /protected/dashboard.html
       </button>
       <button onclick="testPath('/dashboard.html')" class="bg-green-500 text-white px-3 py-1 rounded text-sm">
         Test: /dashboard.html
       </button>
-      <button onclick="testPath('/protected/dashboard.html')" class="bg-green-500 text-white px-3 py-1 rounded text-sm">
-        Test: /protected/dashboard.html
+      <button onclick="testPath('./dashboard.html')" class="bg-green-500 text-white px-3 py-1 rounded text-sm">
+        Test: ./dashboard.html
       </button>
     </div>
   </div>
 
   <script>
-    // Debug information
+    // Show debug info
     document.getElementById('current-url').textContent = window.location.href;
-    document.getElementById('storage-status').textContent = 'Checking...';
-    document.getElementById('redirect-path').textContent = 'Not set';
 
-    // Check storage
     try {
-      const hasSubscribed = localStorage.getItem("hasSubscribedToBexpert");
+      const ls = localStorage.getItem("hasSubscribedToBexpert");
+      const ss = sessionStorage.getItem("hasSubscribedToBexpert");
       document.getElementById('storage-status').textContent = 
-        `localStorage: ${hasSubscribed}, sessionStorage: ${sessionStorage.getItem("hasSubscribedToBexpert")}`;
+        `localStorage: ${ls}, sessionStorage: ${ss}`;
     } catch (e) {
       document.getElementById('storage-status').textContent = 'Storage Error: ' + e.message;
     }
 
-    // Test function for different paths
+    // Path tester
     function testPath(path) {
       document.getElementById('action-log').textContent = `Testing path: ${path}`;
-      
-      // Try to fetch the path to see if it exists
       fetch(path, { method: 'HEAD' })
-        .then(response => {
-          if (response.ok) {
-            document.getElementById('action-log').textContent = `✅ Path ${path} exists! Status: ${response.status}`;
-            document.getElementById('redirect-path').textContent = path + ' (Working)';
+        .then(res => {
+          if (res.ok) {
+            document.getElementById('action-log').textContent = `✅ ${path} exists`;
+            document.getElementById('redirect-path').textContent = path;
           } else {
-            document.getElementById('action-log').textContent = `❌ Path ${path} failed! Status: ${response.status}`;
+            document.getElementById('action-log').textContent = `❌ ${path} not found (${res.status})`;
           }
         })
-        .catch(error => {
-          document.getElementById('action-log').textContent = `❌ Path ${path} error: ${error.message}`;
+        .catch(err => {
+          document.getElementById('action-log').textContent = `❌ Error: ${err.message}`;
         });
     }
 
-    // Main subscription handler
+    // Subscription button
     document.getElementById("confirm-subscribe").addEventListener("click", function () {
-      document.getElementById('action-log').textContent = 'Button clicked, processing...';
-      
       try {
-        // Store subscription status
         localStorage.setItem("hasSubscribedToBexpert", "true");
         sessionStorage.setItem("hasSubscribedToBexpert", "true");
-        
-        document.getElementById('action-log').textContent = 'Subscription saved, determining redirect path...';
-        
-        // Set global variable
-        window.hasSubscribedToBexpert = true;
-        
-        // Try multiple redirect paths in order of likelihood
-        const possiblePaths = [
-          './dashboard.html',           // Relative path (most common)
-          '/dashboard.html',            // Root path
-          '/protected/dashboard.html',  // Your original path
-          'dashboard.html'              // Same directory
-        ];
-        
-        let pathIndex = 0;
-        
-        function tryNextPath() {
-          if (pathIndex >= possiblePaths.length) {
-            document.getElementById('action-log').textContent = '❌ All paths failed! Check your file structure.';
-            alert('Dashboard not found! Please check that dashboard.html exists.');
-            return;
-          }
-          
-          const currentPath = possiblePaths[pathIndex];
-          document.getElementById('action-log').textContent = `Trying path ${pathIndex + 1}: ${currentPath}`;
-          document.getElementById('redirect-path').textContent = currentPath;
-          
-          // Test if path exists
-          fetch(currentPath, { method: 'HEAD' })
-            .then(response => {
-              if (response.ok) {
-                document.getElementById('action-log').textContent = `✅ Found dashboard at: ${currentPath}. Redirecting...`;
-                setTimeout(() => {
-                  window.location.href = currentPath;
-                }, 1000);
-              } else {
-                pathIndex++;
-                setTimeout(tryNextPath, 500);
-              }
-            })
-            .catch(error => {
-              pathIndex++;
-              setTimeout(tryNextPath, 500);
-            });
-        }
-        
-        // Start trying paths
-        setTimeout(tryNextPath, 500);
-        
+        document.getElementById('action-log').textContent = 'Saved flags. Redirecting...';
+
+        const dashboardPath = "/protected/dashboard.html";
+
+        // Verify it before redirecting
+        fetch(dashboardPath, { method: 'HEAD' })
+          .then(res => {
+            if (res.ok) {
+              document.getElementById('redirect-path').textContent = dashboardPath;
+              setTimeout(() => {
+                window.location.href = dashboardPath;
+              }, 800);
+            } else {
+              alert("Dashboard not found. Status: " + res.status);
+              document.getElementById('action-log').textContent = `❌ Redirect failed. Status: ${res.status}`;
+            }
+          })
+          .catch(err => {
+            alert("Error redirecting: " + err.message);
+            document.getElementById('action-log').textContent = `❌ Redirect error: ${err.message}`;
+          });
+
       } catch (error) {
-        console.error('Error:', error);
-        document.getElementById('action-log').textContent = 'Error: ' + error.message;
-        alert('There was an error. Please try again.');
+        alert("Storage error: " + error.message);
+        document.getElementById('action-log').textContent = `❌ Storage error: ${error.message}`;
       }
     });
 
-    // Auto-test paths on load
+    // Auto test preferred path on load
     setTimeout(() => {
-      testPath('./dashboard.html');
+      testPath('/protected/dashboard.html');
     }, 1000);
   </script>
 </body>
-</html
+</html>
