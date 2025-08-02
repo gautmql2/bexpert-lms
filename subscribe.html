@@ -1,28 +1,45 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Subscribe - Bexpert LMS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Subscribe to BexpertAI</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="bg-white p-8 rounded shadow-md text-center max-w-md w-full">
-    <h1 class="text-2xl font-bold mb-4">Welcome to Bexpert LMS</h1>
-    <p class="mb-4 text-gray-700">Please watch this short intro before continuing.</p>
-    <div class="aspect-w-16 aspect-h-9 mb-4">
-      <iframe class="w-full h-64 rounded" src="https://www.youtube.com/embed/gTLiv-1ewBU" frameborder="0" allowfullscreen></iframe>
+
+  <div class="bg-white shadow-xl rounded-lg p-8 max-w-xl w-full text-center">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">🚀 One Last Step!</h1>
+    <p class="text-gray-600 mb-6">
+      To access the full LMS content, please subscribe to our YouTube channel:
+    </p>
+
+    <div class="aspect-video mb-4">
+      <iframe class="w-full h-full rounded-lg"
+              src="https://www.youtube.com/embed?listType=user_uploads&list=BexpertAI"
+              title="BexpertAI YouTube"
+              frameborder="0"
+              allowfullscreen>
+      </iframe>
     </div>
-    <button onclick="confirmSubscription()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Continue to Dashboard</button>
+
+    <a href="https://www.youtube.com/@BexpertAI" target="_blank"
+       class="inline-block mb-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">
+      📺 Subscribe on YouTube
+    </a>
+
+    <button id="confirm-subscribe"
+            class="block w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+      ✅ I’ve Subscribed – Take Me to Dashboard
+    </button>
   </div>
 
   <script>
-    function confirmSubscription() {
+    document.getElementById("confirm-subscribe").addEventListener("click", function () {
       localStorage.setItem("hasSubscribedToBexpert", "true");
       sessionStorage.setItem("hasSubscribedToBexpert", "true");
       window.location.href = "/protected/dashboard.html";
-    }
+    });
   </script>
 </body>
 </html>
