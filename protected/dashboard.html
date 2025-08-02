@@ -1,119 +1,53 @@
-
-<script>
-// STOP REDIRECT LOOP - Add this at the very top of dashboard.html
-window.addEventListener('DOMContentLoaded', function() {
-  const hasSubscribed = localStorage.getItem("hasSubscribedToBexpert") === "true" || 
-                       sessionStorage.getItem("hasSubscribedToBexpert") === "true";
-  
-  console.log('Dashboard loaded. Subscription status:', hasSubscribed);
-  
-  if (!hasSubscribed) {
-    console.log('Not subscribed, redirecting to subscribe page');
-    window.location.href = './subscribe.html';
-  } else {
-    console.log('User is subscribed, showing dashboard');
-    // Show your dashboard content here
-  }
-});
-</script>
-
-<script>
-// STOP REDIRECT LOOP - Add this at the very top of dashboard.html
-window.addEventListener('DOMContentLoaded', function() {
-  const hasSubscribed = localStorage.getItem("hasSubscribedToBexpert") === "true" || 
-                       sessionStorage.getItem("hasSubscribedToBexpert") === "true";
-  
-  console.log('Dashboard loaded. Subscription status:', hasSubscribed);
-  
-  if (!hasSubscribed) {
-    console.log('Not subscribed, redirecting to subscribe page');
-    window.location.href = './subscribe.html';
-  } else {
-    console.log('User is subscribed, showing dashboard');
-    // Show your dashboard content here
-  }
-});
-</script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-  // Redirect if user hasn’t subscribed
-  //const hasSubscribed = localStorage.getItem('hasSubscribedToBexpert') === 'true' &&
-  //                      sessionStorage.getItem('hasSubscribedToBexpert') === 'true';
-//
-// if (!hasSubscribed) {
- //   window.location.href = "/subscribe.html";
- // }
-</script>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bexpert LMS Dashboard</title>
-  <script>
-    // Subscription gate
-    if (localStorage.getItem("hasSubscribedToBexpert") !== "true") {
-      window.location.href = "/subscribe.html";
-    }
-  </script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script type="module" src="/firebase-auth.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex">
+<body class="bg-gray-50 min-h-screen font-sans">
 
-  <!-- Sidebar -->
-  <aside class="w-64 bg-white shadow-md p-6 flex flex-col">
-    <div class="text-2xl font-bold text-blue-600 text-center mb-6">Bexpert LMS</div>
-    <nav class="flex-1 space-y-4 text-gray-700">
-      <a href="/protected/dashboard.html" class="block px-4 py-2 hover:bg-blue-100 rounded">📊 Dashboard</a>
-      <a href="/protected/course1.html" class="block px-4 py-2 hover:bg-blue-100 rounded">📚 Courses</a>
-      <a href="#" class="block px-4 py-2 hover:bg-blue-100 rounded">🎥 Live Sessions</a>
-      <a href="#" class="block px-4 py-2 hover:bg-blue-100 rounded">💼 Projects</a>
-      <a href="#" class="block px-4 py-2 hover:bg-blue-100 rounded">📝 Assignments</a>
-      <a href="#" class="block px-4 py-2 hover:bg-blue-100 rounded">🎓 Certificates</a>
-    </nav>
-    <button onclick="logout()" class="mt-6 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Logout</button>
-  </aside>
+  <!-- Navbar -->
+  <nav class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-blue-600">Bexpert LMS Dashboard</h1>
+    <button id="logoutBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
+      Logout
+    </button>
+  </nav>
 
   <!-- Main Content -->
-  <main class="flex-1 p-8">
-    <header class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-semibold">Welcome to Bexpert LMS</h1>
-      <div class="text-gray-500 text-sm">Logged in as: <span id="user-email">Loading...</span></div>
-    </header>
+  <div class="p-6">
+    <h2 class="text-2xl font-semibold mb-4">Welcome to your dashboard 👋</h2>
+    <p class="text-gray-700">This content is only visible to logged-in users.</p>
+    <!-- Add course cards or embedded videos here -->
+  </div>
 
-    <section class="bg-white rounded-lg shadow p-6 mb-6">
-      <h2 class="text-xl font-bold mb-4">📘 Excel Mastery - Basics</h2>
-      <div class="aspect-w-16 aspect-h-9 w-full rounded overflow-hidden mb-4">
-        <iframe class="w-full h-96 rounded" src="https://www.youtube.com/embed/YOUR_VIDEO_ID_HERE" title="Excel Video" frameborder="0" allowfullscreen></iframe>
-      </div>
-      <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Mark as Complete</button>
-    </section>
-  </main>
-
-  <!-- Firebase Auth Protection -->
+  <!-- Firebase Authentication Script -->
   <script type="module">
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { auth } from "/firebase-auth.js";
+    import { auth } from '../firebase-auth.js';
+    import {
+      onAuthStateChanged,
+      signOut
+    } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
-    // Protect page
+    // ✅ Redirect to login if not logged in
     onAuthStateChanged(auth, (user) => {
       if (!user) {
-        alert("You must be logged in.");
-        window.location.href = "/";
+        window.location.href = '../index.html'; // Redirect to login
       } else {
-        document.getElementById("user-email").textContent = user.email;
+        console.log("User logged in:", user.email);
       }
     });
 
-    // Logout function
-    window.logout = function () {
+    // ✅ Logout functionality
+    document.getElementById("logoutBtn").addEventListener("click", () => {
       signOut(auth).then(() => {
-        alert("You have been logged out.");
-        window.location.href = "/";
+        window.location.href = "../index.html";
       }).catch((error) => {
         alert("Logout failed: " + error.message);
       });
-    }
+    });
   </script>
 </body>
 </html>
