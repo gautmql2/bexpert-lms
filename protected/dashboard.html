@@ -5,7 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bexpert LMS Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script type="module" src="/firebase-auth.js"></script>
+
+  <!-- Subscription Check -->
+  <script>
+    const isSubscribed =
+      localStorage.getItem('hasSubscribedToBexpert') === 'true' ||
+      sessionStorage.getItem('hasSubscribedToBexpert') === 'true';
+    if (!isSubscribed) {
+      window.location.href = "/subscribe.html";
+    }
+  </script>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="/firebase-auth.js"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex">
 
@@ -16,7 +30,7 @@
       <a href="/protected/dashboard.html" class="block px-4 py-2 hover:bg-blue-100 rounded">📊 Dashboard</a>
       <a href="/protected/course1.html" class="block px-4 py-2 hover:bg-blue-100 rounded">📚 Courses</a>
       <a href="#" class="block px-4 py-2 hover:bg-blue-100 rounded">🎥 Live Sessions</a>
-      <a href="#" class="block px-4 py-2 hover:bg-blue-100 rounded">💼 Projects</a>
+      <a href="/protected/project1.html" class="block px-4 py-2 hover:bg-blue-100 rounded">💼 Projects</a>
       <a href="#" class="block px-4 py-2 hover:bg-blue-100 rounded">📝 Assignments</a>
       <a href="#" class="block px-4 py-2 hover:bg-blue-100 rounded">🎓 Certificates</a>
     </nav>
@@ -32,20 +46,16 @@
 
     <section class="bg-white rounded-lg shadow p-6 mb-6">
       <h2 class="text-xl font-bold mb-4">📘 Excel Mastery - Basics</h2>
-      <div class="aspect-w-16 aspect-h-9 w-full rounded overflow-hidden mb-4">
-        <iframe class="w-full h-96 rounded" src="https://www.youtube.com/embed/YOUR_VIDEO_ID_HERE" title="Excel Video" frameborder="0" allowfullscreen></iframe>
+      <div class="w-full aspect-video mb-4">
+        <iframe class="w-full h-full rounded" src="https://www.youtube.com/embed/YOUR_VIDEO_ID_HERE" title="Excel Video" frameborder="0" allowfullscreen></iframe>
       </div>
       <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Mark as Complete</button>
     </section>
   </main>
 
   <!-- Firebase Auth Protection -->
-  <script type="module">
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { auth } from "/firebase-auth.js";
-
-    // Protect page
-    onAuthStateChanged(auth, (user) => {
+  <script>
+    firebase.auth().onAuthStateChanged((user) => {
       if (!user) {
         alert("You must be logged in.");
         window.location.href = "/";
@@ -54,9 +64,10 @@
       }
     });
 
-    // Logout function
-    window.logout = function () {
-      signOut(auth).then(() => {
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        localStorage.removeItem('hasSubscribedToBexpert');
+        sessionStorage.removeItem('hasSubscribedToBexpert');
         alert("You have been logged out.");
         window.location.href = "/";
       }).catch((error) => {
