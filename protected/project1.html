@@ -1,29 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Project 1</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project 1 - Bexpert LMS</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+
+  <!-- Subscription Check -->
   <script>
-    const hasSubscribed = localStorage.getItem('hasSubscribedToBexpert') === 'true' &&
-                          sessionStorage.getItem('hasSubscribedToBexpert') === 'true';
-    if (!hasSubscribed) {
-      window.location.href = "/subscribe.html";
+    const isSubscribed =
+      localStorage.getItem('hasSubscribedToBexpert') === 'true' ||
+      sessionStorage.getItem('hasSubscribedToBexpert') === 'true';
+
+    if (!isSubscribed) {
+      window.location.href = '/subscribe.html';
     }
   </script>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="/firebase-auth.js"></script>
 </head>
-<body class="bg-gray-100">
-  <div class="p-4">
+<body class="bg-gray-100 min-h-screen">
+
+  <div class="p-6">
     <h1 class="text-3xl font-bold text-center">📁 Welcome to Project 1</h1>
     <p class="text-center mt-2">This is your Project 1 page. More content coming soon.</p>
-    <button onclick="logout()" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">Logout</button>
+
+    <div class="text-center mt-6">
+      <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded">
+        Logout
+      </button>
+    </div>
   </div>
+
   <script>
     function logout() {
-      localStorage.removeItem('hasSubscribedToBexpert');
-      sessionStorage.removeItem('hasSubscribedToBexpert');
-      window.location.href = "/index.html";
+      firebase.auth().signOut().then(() => {
+        localStorage.removeItem('hasSubscribedToBexpert');
+        sessionStorage.removeItem('hasSubscribedToBexpert');
+        window.location.href = '/index.html';
+      });
     }
   </script>
 </body>
