@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bexpert LMS - Login</title>
-  <link rel="stylesheet" href="style.css" />
-  <script type="module" src="./firebase-auth.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -27,6 +25,7 @@
     h2 {
       text-align: center;
       margin-bottom: 1rem;
+      color: #333;
     }
     input, button {
       width: 100%;
@@ -35,15 +34,21 @@
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 1rem;
+      box-sizing: border-box;
     }
     button {
       background-color: #007bff;
       color: white;
       border: none;
       cursor: pointer;
+      margin-top: 1rem;
     }
     button:hover {
       background-color: #0056b3;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
     }
     p {
       text-align: center;
@@ -52,6 +57,23 @@
     a {
       color: #007bff;
       cursor: pointer;
+      text-decoration: underline;
+    }
+    .error {
+      color: #dc3545;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+    .success {
+      color: #28a745;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+    .loading {
+      text-align: center;
+      margin-top: 1rem;
     }
   </style>
 </head>
@@ -59,32 +81,162 @@
   <div class="container">
     <h2>Login to Bexpert LMS</h2>
 
+    <!-- Login Form -->
     <form id="login-form">
       <input type="email" id="email" placeholder="Email" required />
       <input type="password" id="password" placeholder="Password" required />
-      <button type="submit">Login</button>
+      <button type="submit" id="login-btn">Login</button>
+      <div id="login-error" class="error" style="display:none;"></div>
     </form>
 
     <p>Don't have an account? <a id="signup-toggle">Sign up</a></p>
 
+    <!-- Signup Form -->
     <form id="signup-form" style="display:none;">
       <input type="email" id="signup-email" placeholder="Email" required />
-      <input type="password" id="signup-password" placeholder="Password" required />
-      <button type="submit">Sign Up</button>
+      <input type="password" id="signup-password" placeholder="Password (min 6 characters)" required minlength="6" />
+      <button type="submit" id="signup-btn">Sign Up</button>
+      <div id="signup-error" class="error" style="display:none;"></div>
+      <div id="signup-success" class="success" style="display:none;"></div>
       <p><a id="login-toggle">Back to Login</a></p>
     </form>
+
+    <div id="loading" class="loading" style="display:none;">
+      <p>Loading...</p>
+    </div>
   </div>
 
-  <script>
-    // Toggle Forms
-    document.getElementById('signup-toggle').addEventListener('click', () => {
-      document.getElementById('login-form').style.display = 'none';
-      document.getElementById('signup-form').style.display = 'block';
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Import Firebase modules
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword, 
+      signInWithEmailAndPassword,
+      onAuthStateChanged 
+    } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+    // Firebase configuration - REPLACE WITH YOUR ACTUAL CONFIG
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // DOM elements
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const signupToggle = document.getElementById('signup-toggle');
+    const loginToggle = document.getElementById('login-toggle');
+    const loginError = document.getElementById('login-error');
+    const signupError = document.getElementById('signup-error');
+    const signupSuccess = document.getElementById('signup-success');
+    const loading = document.getElementById('loading');
+
+    // Check if user is already authenticated
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, redirect to subscribe page
+        window.location.href = './subscribe.html';
+      }
     });
-    document.getElementById('login-toggle').addEventListener('click', () => {
-      document.getElementById('signup-form').style.display = 'none';
-      document.getElementById('login-form').style.display = 'block';
+
+    // Toggle between login and signup forms
+    signupToggle.addEventListener('click', () => {
+      loginForm.style.display = 'none';
+      signupForm.style.display = 'block';
+      clearMessages();
     });
+
+    loginToggle.addEventListener('click', () => {
+      signupForm.style.display = 'none';
+      loginForm.style.display = 'block';
+      clearMessages();
+    });
+
+    // Clear error/success messages
+    function clearMessages() {
+      loginError.style.display = 'none';
+      signupError.style.display = 'none';
+      signupSuccess.style.display = 'none';
+    }
+
+    // Show loading state
+    function showLoading(show) {
+      loading.style.display = show ? 'block' : 'none';
+      document.getElementById('login-btn').disabled = show;
+      document.getElementById('signup-btn').disabled = show;
+    }
+
+    // Handle login
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      clearMessages();
+      showLoading(true);
+      
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        // Redirect will be handled by onAuthStateChanged
+      } catch (error) {
+        showLoading(false);
+        loginError.textContent = getErrorMessage(error.code);
+        loginError.style.display = 'block';
+      }
+    });
+
+    // Handle signup
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+      
+      clearMessages();
+      showLoading(true);
+      
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        signupSuccess.textContent = 'Account created successfully! Redirecting...';
+        signupSuccess.style.display = 'block';
+        // Redirect will be handled by onAuthStateChanged
+      } catch (error) {
+        showLoading(false);
+        signupError.textContent = getErrorMessage(error.code);
+        signupError.style.display = 'block';
+      }
+    });
+
+    // Get user-friendly error messages
+    function getErrorMessage(errorCode) {
+      switch (errorCode) {
+        case 'auth/user-not-found':
+          return 'No account found with this email address.';
+        case 'auth/wrong-password':
+          return 'Incorrect password.';
+        case 'auth/email-already-in-use':
+          return 'An account with this email already exists.';
+        case 'auth/weak-password':
+          return 'Password should be at least 6 characters.';
+        case 'auth/invalid-email':
+          return 'Please enter a valid email address.';
+        case 'auth/too-many-requests':
+          return 'Too many failed attempts. Please try again later.';
+        default:
+          return 'An error occurred. Please try again.';
+      }
+    }
   </script>
 </body>
 </html>
