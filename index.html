@@ -1,44 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bexpert LMS - Login</title>
-  <script type="module" src="/firebase-auth.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
+  <script type="module" src="./firebase-auth.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f8fafc, #e2e8f0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    input, button {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    p {
+      text-align: center;
+      margin-top: 1rem;
+    }
+    a {
+      color: #007bff;
+      cursor: pointer;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="bg-white p-8 rounded shadow-md">
-    <h1 class="text-2xl font-bold mb-6">Login to Bexpert LMS</h1>
-    <form id="login-form" class="space-y-4">
-      <input type="email" id="email" placeholder="Email" required class="block w-full border rounded p-2">
-      <input type="password" id="password" placeholder="Password" required class="block w-full border rounded p-2">
-      <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded">Login</button>
+<body>
+  <div class="container">
+    <h2>Login to Bexpert LMS</h2>
+
+    <form id="login-form">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
     </form>
-    <p class="mt-4 text-sm text-gray-600">Not registered? Use sign-up after login form appears.</p>
+
+    <p>Don't have an account? <a id="signup-toggle">Sign up</a></p>
+
+    <form id="signup-form" style="display:none;">
+      <input type="email" id="signup-email" placeholder="Email" required />
+      <input type="password" id="signup-password" placeholder="Password" required />
+      <button type="submit">Sign Up</button>
+      <p><a id="login-toggle">Back to Login</a></p>
+    </form>
   </div>
 
-  <script type="module">
-    import { signInWithEmailAndPassword, createUserWithEmailAndPassword, getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { auth } from "/firebase-auth.js";
-
-    const form = document.getElementById("login-form");
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => window.location.href = "/protected/dashboard.html")
-        .catch((err) => {
-          if (err.code === "auth/user-not-found") {
-            createUserWithEmailAndPassword(auth, email, password)
-              .then(() => alert("Account created! You can now login."))
-              .catch((e2) => alert("Sign‑up error: " + e2.message));
-          } else {
-            alert("Login error: " + err.message);
-          }
-        });
+  <script>
+    // Toggle Forms
+    document.getElementById('signup-toggle').addEventListener('click', () => {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('signup-form').style.display = 'block';
+    });
+    document.getElementById('login-toggle').addEventListener('click', () => {
+      document.getElementById('signup-form').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
     });
   </script>
 </body>
