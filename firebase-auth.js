@@ -1,14 +1,17 @@
+
+// firebase-auth.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBCoL3LFhEuSFQPWJphgCMERJ7skl_YPjs",
-  authDomain: "bexpert-lms.firebaseapp.com",
-  projectId: "bexpert-lms",
-  storageBucket: "bexpert-lms.firebasestorage.app",
-  messagingSenderId: "341450782292",
-  appId: "1:341450782292:web:4ee4725d0c6b23496f9fc1"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+const auth = getAuth(app);
+export { auth };
