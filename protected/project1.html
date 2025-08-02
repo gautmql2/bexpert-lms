@@ -15,13 +15,20 @@
   <!-- YouTube Video Embed -->
   <div class="w-full max-w-2xl mb-6">
     <div class="aspect-w-16 aspect-h-9">
-      <iframe class="w-full h-96 rounded" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" title="Excel Project" frameborder="0" allowfullscreen></iframe>
+      <iframe class="w-full h-96 rounded" 
+              src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
+              title="Excel Project" 
+              frameborder="0" 
+              allowfullscreen>
+      </iframe>
     </div>
   </div>
 
   <!-- Supporting Files -->
   <div class="mb-8 text-center">
-    <a href="https://drive.google.com/your-supporting-file-link" target="_blank" class="text-blue-600 underline">📄 Download Project Files</a>
+    <a href="https://drive.google.com/your-supporting-file-link" 
+       target="_blank" 
+       class="text-blue-600 underline">📄 Download Project Files</a>
   </div>
 
   <!-- Action Buttons -->
@@ -36,11 +43,8 @@
     import { auth } from "/firebase-auth.js";
 
     onAuthStateChanged(auth, (user) => {
-      const hasSubscribed = localStorage.getItem("hasSubscribedToBexpert");
       if (!user) {
         window.location.href = "/login.html";
-      } else if (!hasSubscribed) {
-        window.location.href = "/subscribe.html";
       }
     });
 
