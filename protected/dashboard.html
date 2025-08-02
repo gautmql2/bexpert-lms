@@ -1,3 +1,39 @@
+
+<script>
+// STOP REDIRECT LOOP - Add this at the very top of dashboard.html
+window.addEventListener('DOMContentLoaded', function() {
+  const hasSubscribed = localStorage.getItem("hasSubscribedToBexpert") === "true" || 
+                       sessionStorage.getItem("hasSubscribedToBexpert") === "true";
+  
+  console.log('Dashboard loaded. Subscription status:', hasSubscribed);
+  
+  if (!hasSubscribed) {
+    console.log('Not subscribed, redirecting to subscribe page');
+    window.location.href = './subscribe.html';
+  } else {
+    console.log('User is subscribed, showing dashboard');
+    // Show your dashboard content here
+  }
+});
+</script>
+
+<script>
+// STOP REDIRECT LOOP - Add this at the very top of dashboard.html
+window.addEventListener('DOMContentLoaded', function() {
+  const hasSubscribed = localStorage.getItem("hasSubscribedToBexpert") === "true" || 
+                       sessionStorage.getItem("hasSubscribedToBexpert") === "true";
+  
+  console.log('Dashboard loaded. Subscription status:', hasSubscribed);
+  
+  if (!hasSubscribed) {
+    console.log('Not subscribed, redirecting to subscribe page');
+    window.location.href = './subscribe.html';
+  } else {
+    console.log('User is subscribed, showing dashboard');
+    // Show your dashboard content here
+  }
+});
+</script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
