@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,20 +8,13 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <!-- Loading Screen -->
-  <div id="loading-screen" class="fixed inset-0 bg-white flex items-center justify-center z-50">
-    <div class="text-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-      <p class="mt-4 text-gray-600">Loading...</p>
-    </div>
-  </div>
 
-  <!-- Subscribe Content -->
-  <div id="subscribe-content" class="bg-white shadow-xl rounded-lg p-8 max-w-xl w-full text-center" style="display: none;">
+  <div class="bg-white shadow-xl rounded-lg p-8 max-w-xl w-full text-center">
     <h1 class="text-2xl font-bold text-gray-800 mb-4">🚀 One Last Step!</h1>
     <p class="text-gray-600 mb-6">
       To access the full LMS content, please subscribe to our YouTube channel:
     </p>
+
     <!-- Embed your channel or a promo video -->
     <div class="aspect-video mb-4">
       <iframe class="w-full h-full rounded-lg"
@@ -30,71 +24,27 @@
               allowfullscreen>
       </iframe>
     </div>
+
     <a href="https://www.youtube.com/@BexpertAI" target="_blank"
        class="inline-block mb-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">
       📺 Subscribe on YouTube
     </a>
+
     <button id="confirm-subscribe"
             class="block w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-      ✅ I've Subscribed – Take Me to Dashboard
+      ✅ I’ve Subscribed – Take Me to Dashboard
     </button>
-
-    <!-- Debug info (remove in production) -->
-    <div class="mt-4 p-2 bg-gray-100 rounded text-xs text-gray-600">
-      <p>Debug: <span id="debug-info">Checking...</span></p>
-    </div>
   </div>
 
   <script>
-    // Simple version without Firebase for immediate testing
-    const loadingScreen = document.getElementById('loading-screen');
-    const subscribeContent = document.getElementById('subscribe-content');
-    const debugInfo = document.getElementById('debug-info');
-
-    // Show content after brief loading
-    setTimeout(() => {
-      loadingScreen.style.display = 'none';
-      subscribeContent.style.display = 'block';
-      debugInfo.textContent = 'Ready';
-    }, 1000);
-
-    // Handle subscription confirmation
     document.getElementById("confirm-subscribe").addEventListener("click", function () {
-      debugInfo.textContent = 'Button clicked, saving subscription...';
-      
-      try {
-        // Store subscription status
-        localStorage.setItem("hasSubscribedToBexpert", "true");
-        sessionStorage.setItem("hasSubscribedToBexpert", "true");
-        
-        debugInfo.textContent = 'Subscription saved, redirecting...';
-        
-        // Set global variable for immediate access
-        window.hasSubscribedToBexpert = true;
-        
-        // FIXED REDIRECT PATH - try multiple options
-        setTimeout(() => {
-          // Try relative path first
-          if (window.location.pathname === '/subscribe.html') {
-            window.location.href = './dashboard.html';
-          } else if (window.location.pathname === '/subscribe') {
-            window.location.href = './dashboard.html';
-          } else {
-            // Fallback to absolute path
-            window.location.href = '/dashboard.html';
-          }
-        }, 500);
-        
-      } catch (error) {
-        console.error('Error saving subscription status:', error);
-        debugInfo.textContent = 'Error: ' + error.message;
-        alert('There was an error. Please try again.');
-      }
+    // Store flag in both localStorage and sessionStorage
+    localStorage.setItem("hasSubscribedToBexpert", "true");
+    sessionStorage.setItem("hasSubscribedToBexpert", "true");
+    
+    // Redirect to dashboard
+    window.location.href = "/protected/dashboard.html";
     });
-
-    // Debug current path
-    console.log('Current path:', window.location.pathname);
-    console.log('Current href:', window.location.href);
   </script>
 </body>
 </html>
