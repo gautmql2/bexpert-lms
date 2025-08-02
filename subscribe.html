@@ -11,7 +11,7 @@
   <div id="loading-screen" class="fixed inset-0 bg-white flex items-center justify-center z-50">
     <div class="text-center">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-      <p class="mt-4 text-gray-600">Checking authentication...</p>
+      <p class="mt-4 text-gray-600">Loading...</p>
     </div>
   </div>
 
@@ -38,90 +38,63 @@
             class="block w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
       ✅ I've Subscribed – Take Me to Dashboard
     </button>
-    
-    <!-- User info and logout option -->
-    <div class="mt-4 pt-4 border-t">
-      <p class="text-sm text-gray-500 mb-2">Logged in as: <span id="user-email" class="text-gray-700"></span></p>
-      <button id="logout-btn" class="text-gray-500 hover:text-gray-700 text-sm">
-        Not you? Logout
-      </button>
+
+    <!-- Debug info (remove in production) -->
+    <div class="mt-4 p-2 bg-gray-100 rounded text-xs text-gray-600">
+      <p>Debug: <span id="debug-info">Checking...</span></p>
     </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-
-    // Firebase configuration - REPLACE WITH YOUR ACTUAL CONFIG
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
+  <script>
+    // Simple version without Firebase for immediate testing
     const loadingScreen = document.getElementById('loading-screen');
     const subscribeContent = document.getElementById('subscribe-content');
-    const userEmail = document.getElementById('user-email');
+    const debugInfo = document.getElementById('debug-info');
 
-    // Check authentication status
-    onAuthStateChanged(auth, (user) => {
+    // Show content after brief loading
+    setTimeout(() => {
       loadingScreen.style.display = 'none';
-      
-      if (user) {
-        // User is authenticated, show subscribe content
-        subscribeContent.style.display = 'block';
-        userEmail.textContent = user.email;
-      } else {
-        // User is not authenticated, redirect to login
-        console.log('User not authenticated, redirecting to login');
-        window.location.href = './index.html';
-      }
-    });
+      subscribeContent.style.display = 'block';
+      debugInfo.textContent = 'Ready';
+    }, 1000);
 
     // Handle subscription confirmation
     document.getElementById("confirm-subscribe").addEventListener("click", function () {
-      console.log('Subscribe button clicked');
+      debugInfo.textContent = 'Button clicked, saving subscription...';
       
       try {
         // Store subscription status
         localStorage.setItem("hasSubscribedToBexpert", "true");
         sessionStorage.setItem("hasSubscribedToBexpert", "true");
-        console.log('Subscription status saved');
         
-        // Also set a global variable for immediate access
+        debugInfo.textContent = 'Subscription saved, redirecting...';
+        
+        // Set global variable for immediate access
         window.hasSubscribedToBexpert = true;
         
-        // Redirect to dashboard - FIXED PATH
-        console.log('Redirecting to dashboard...');
-        window.location.href = "./dashboard.html";  // Changed from "/protected/dashboard.html"
+        // FIXED REDIRECT PATH - try multiple options
+        setTimeout(() => {
+          // Try relative path first
+          if (window.location.pathname === '/subscribe.html') {
+            window.location.href = './dashboard.html';
+          } else if (window.location.pathname === '/subscribe') {
+            window.location.href = './dashboard.html';
+          } else {
+            // Fallback to absolute path
+            window.location.href = '/dashboard.html';
+          }
+        }, 500);
         
       } catch (error) {
         console.error('Error saving subscription status:', error);
+        debugInfo.textContent = 'Error: ' + error.message;
         alert('There was an error. Please try again.');
       }
     });
 
-    // Handle logout
-    document.getElementById("logout-btn").addEventListener("click", async function () {
-      try {
-        await signOut(auth);
-        // Clear subscription status
-        localStorage.removeItem("hasSubscribedToBexpert");
-        sessionStorage.removeItem("hasSubscribedToBexpert");
-        window.hasSubscribedToBexpert = false;
-        // Redirect will be handled by onAuthStateChanged
-      } catch (error) {
-        console.error('Error signing out:', error);
-        alert('Error signing out. Please try again.');
-      }
-    });
+    // Debug current path
+    console.log('Current path:', window.location.pathname);
+    console.log('Current href:', window.location.href);
   </script>
 </body>
 </html>
